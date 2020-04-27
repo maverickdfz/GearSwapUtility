@@ -39,7 +39,8 @@ idle
 resting
 engaged
 defense
-buff```
+buff
+```
 
 Examples of more specific set names:
 
@@ -51,7 +52,8 @@ precast
         Chant du Cygne
 midcast
     FC
-        Cure```
+        Cure
+```
 
 ## Examples
 
