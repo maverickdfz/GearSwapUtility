@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GearSwapUtility.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="WindowerDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\Windower4</Value>
+    </Setting>
+    <Setting Name="IconsDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\Windower4\addons\equipviewerv2\icons\32</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
