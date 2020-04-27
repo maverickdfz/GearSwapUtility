@@ -2,6 +2,8 @@
 
 A helper utility program for creating GearSwap sets visually
 
+![GearSwapUtility Screenshot](https://github.com/maverickdfz/GearSwapUtility/raw/master/screenshot.png "GearSwapUtility Screenshot")
+
 You will need to configure the path to your windower folder and a folder containing equipment icon pngs by clicking Edit > Preferences...
 
 32x32 equipment icons can be downloaded from the equipviewer repository here: [icons.7z](https://github.com/ProjectTako/ffxi-addons/blob/master/equipviewerv2/windower/icons.7z)
