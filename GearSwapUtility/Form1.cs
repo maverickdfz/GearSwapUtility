@@ -12,6 +12,7 @@ namespace GearSwapUtility
 {
     public partial class Form1 : Form
     {
+        private ToolTip toolTip1;
         private ContextMenu contextMenu1;
         private ContextMenu contextMenu2;
 
@@ -645,6 +646,27 @@ namespace GearSwapUtility
             }
         }
 
+        class ThreeTupleConverter : System.Web.Script.Serialization.JavaScriptConverter
+        {
+            public override IEnumerable<Type> SupportedTypes
+            {
+                get { return new List<Type> { typeof(Tuple<string, string, string>) }; }
+            }
+
+            public override object Deserialize(IDictionary<string, object> dictionary, Type type, System.Web.Script.Serialization.JavaScriptSerializer serializer)
+            {
+                string item1 = (string)dictionary["Item1"];
+                string item2 = (string)dictionary["Item2"];
+                string item3 = (string)dictionary["Item3"];
+                return new Tuple<string, string, string>(item1, item2, item3);
+            }
+
+            public override IDictionary<string, object> Serialize(object obj, System.Web.Script.Serialization.JavaScriptSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -664,6 +686,7 @@ namespace GearSwapUtility
                         treeView1.Nodes.Clear();
                         Sets.Clear();
                         System.Web.Script.Serialization.JavaScriptSerializer jss = new System.Web.Script.Serialization.JavaScriptSerializer();
+                        jss.RegisterConverters(new List<System.Web.Script.Serialization.JavaScriptConverter> { new ThreeTupleConverter() });
                         Dictionary<string, Dictionary<string, Tuple<string, string, string>>> importSets = jss.Deserialize<Dictionary<string, Dictionary<string, Tuple<string, string, string>>>>(json);
 
                         foreach (KeyValuePair<string, Dictionary<string, Tuple<string, string, string>>> Pair in importSets)
@@ -764,8 +787,15 @@ namespace GearSwapUtility
                     toolTipText = Sets[CurrentNode][slotType].Item2;
                 }
 
-                ToolTip toolTip = new ToolTip();
-                toolTip.SetToolTip(pictureBox, toolTipText);
+                if (toolTip1 == null)
+                {
+                    toolTip1 = new ToolTip();
+                }
+                else
+                {
+                    toolTip1.RemoveAll();
+                }
+                toolTip1.SetToolTip(pictureBox, toolTipText);
             }
         }
 
