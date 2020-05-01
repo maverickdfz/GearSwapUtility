@@ -528,6 +528,34 @@ namespace GearSwapUtility
             }
         }
 
+        SlotType GetSlotTypeForPictureBox(PictureBox pictureBox)
+        {
+            Dictionary<PictureBox, SlotType> pictureBoxes = new Dictionary<PictureBox, SlotType>
+            {
+                {pictureBox1, SlotType.Main},
+                {pictureBox2, SlotType.Sub},
+                {pictureBox3, SlotType.Range},
+                {pictureBox4, SlotType.Ammo},
+                {pictureBox5, SlotType.Head},
+                {pictureBox6, SlotType.Neck},
+                {pictureBox7, SlotType.LEar},
+                {pictureBox8, SlotType.REar},
+                {pictureBox9, SlotType.Body},
+                {pictureBox10, SlotType.Hands},
+                {pictureBox11, SlotType.LRing},
+                {pictureBox12, SlotType.RRing},
+                {pictureBox13, SlotType.Back},
+                {pictureBox14, SlotType.Waist},
+                {pictureBox15, SlotType.Legs},
+                {pictureBox16, SlotType.Feet}
+            };
+            if(pictureBoxes.ContainsKey(pictureBox))
+            {
+                return pictureBoxes[pictureBox];
+            }
+            return SlotType.Main;
+        }
+
         private void DeselectSet()
         {
             CurrentNode = null;
@@ -815,6 +843,130 @@ namespace GearSwapUtility
         {
             Form4 form = new Form4();
             form.ShowDialog(this);
+        }
+
+        private void AddTooltipForPictureBox(PictureBox pictureBox)
+        {
+            SlotType slotType = GetSlotTypeForPictureBox(pictureBox);
+            if (Sets[CurrentNode][slotType].Key >= 0)
+            {
+                string item_name = Sets[CurrentNode][slotType].Value;
+
+                ToolTip toolTip = new ToolTip();
+                toolTip.SetToolTip(pictureBox, item_name);
+            }
+        }
+
+        private void pictureBox1_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox1);
+        }
+
+        private void pictureBox2_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox2);
+        }
+
+        private void pictureBox3_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox3);
+        }
+
+        private void pictureBox4_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox4);
+        }
+
+        private void pictureBox5_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox5);
+        }
+
+        private void pictureBox6_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox6);
+        }
+
+        private void pictureBox7_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox7);
+        }
+
+        private void pictureBox8_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox8);
+        }
+
+        private void pictureBox9_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox9);
+        }
+
+        private void pictureBox10_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox10);
+        }
+
+        private void pictureBox11_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox11);
+        }
+
+        private void pictureBox12_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox12);
+        }
+
+        private void pictureBox13_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox13);
+        }
+
+        private void pictureBox14_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox14);
+        }
+
+        private void pictureBox15_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox15);
+        }
+
+        private void pictureBox16_MouseHover(object sender, EventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            AddTooltipForPictureBox(pictureBox16);
         }
     }
 }
