@@ -13,11 +13,14 @@ namespace GearSwapUtility
     public partial class Form1 : Form
     {
         private ContextMenu contextMenu1;
+        private ContextMenu contextMenu2;
 
         private TreeNode CurrentNode = null;
         private TreeNode node_under_mouse = null;
 
-        private Dictionary<TreeNode, Dictionary<SlotType, KeyValuePair<int, string>>> Sets;
+        private PictureBox CurrentPictureBox = null;
+
+        private Dictionary<TreeNode, Dictionary<SlotType, Tuple<int, string, string>>> Sets;
 
         public Form1()
         {
@@ -33,25 +36,25 @@ namespace GearSwapUtility
             SelectSet(CurrentNode);
         }
 
-        private Dictionary<SlotType, KeyValuePair<int, string>> GetBlankSet()
+        private Dictionary<SlotType, Tuple<int, string, string>> GetBlankSet()
         {
-            Dictionary<SlotType, KeyValuePair<int, string>> BlankSet = new Dictionary<SlotType, KeyValuePair<int, string>>();
-            BlankSet.Add(SlotType.Main, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Sub, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Range, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Ammo, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Head, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Neck, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.LEar, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.REar, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Body, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Hands, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.LRing, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.RRing, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Back, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Waist, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Legs, new KeyValuePair<int, string>(-1, ""));
-            BlankSet.Add(SlotType.Feet, new KeyValuePair<int, string>(-1, ""));
+            Dictionary<SlotType, Tuple<int, string, string>> BlankSet = new Dictionary<SlotType, Tuple<int, string, string>>();
+            BlankSet.Add(SlotType.Main, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Sub, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Range, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Ammo, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Head, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Neck, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.LEar, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.REar, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Body, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Hands, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.LRing, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.RRing, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Back, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Waist, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Legs, new Tuple<int, string, string>(-1, "", ""));
+            BlankSet.Add(SlotType.Feet, new Tuple<int, string, string>(-1, "", ""));
             return BlankSet;
         }
 
@@ -69,10 +72,11 @@ namespace GearSwapUtility
             if (e.Button == MouseButtons.Left)
             {
                 TreeNode Node = treeView1.GetNodeAt(e.X, e.Y);
-                if (Node == null)
-                    DeselectSet();
-                else
-                {
+                //if (Node == null)
+                //    DeselectSet();
+                //else
+                if(Node != null)
+                { 
                     DeselectSet();
                     CurrentNode = Node;
                     SelectSet(CurrentNode);
@@ -121,7 +125,8 @@ namespace GearSwapUtility
             {
                 if (!treeView1.Nodes.ContainsKey(text))
                 {
-                    treeView1.Nodes.Add(text, text);
+                    TreeNode treeNode = treeView1.Nodes.Add(text, text);
+                    SelectSet(treeNode);
                 }
             }
         }
@@ -148,14 +153,16 @@ namespace GearSwapUtility
                 {
                     if (!node_under_mouse.Parent.Nodes[index].Nodes.ContainsKey(text))
                     {
-                        node_under_mouse.Parent.Nodes[index].Nodes.Add(text, text);
+                        TreeNode treeNode = node_under_mouse.Parent.Nodes[index].Nodes.Add(text, text);
+                        SelectSet(treeNode);
                     }
                 }
                 else
                 {
                     if (!treeView1.Nodes[index].Nodes.ContainsKey(text))
                     {
-                        treeView1.Nodes[index].Nodes.Add(text, text);
+                        TreeNode treeNode = treeView1.Nodes[index].Nodes.Add(text, text);
+                        SelectSet(treeNode);
                     }
                 }
             }
@@ -168,7 +175,7 @@ namespace GearSwapUtility
 
         private void ClearSets()
         {
-            Sets = new Dictionary<TreeNode, Dictionary<SlotType, KeyValuePair<int, string>>>();
+            Sets = new Dictionary<TreeNode, Dictionary<SlotType, Tuple<int, string, string>>>();
         }
 
         private void MenuItem_ClearSet_Click(Object sender, System.EventArgs e)
@@ -314,9 +321,9 @@ namespace GearSwapUtility
             List<Form3.ComboBoxItem> items = GetItems(Slot);
 
             form.SetItems(items);
-            if (Sets[CurrentNode][Slot].Key >= 0)
+            if (Sets[CurrentNode][Slot].Item1 >= 0)
             {
-                form.SetItem(Sets[CurrentNode][Slot].Key);
+                form.SetItem(Sets[CurrentNode][Slot].Item1);
             }
             form.ShowDialog(this);
 
@@ -325,7 +332,7 @@ namespace GearSwapUtility
 
             if (item_id >= 0)
             {
-                Sets[CurrentNode][Slot] = new KeyValuePair<int, string>(item_id, item_name);
+                Sets[CurrentNode][Slot] = new Tuple<int, string, string>(item_id, item_name, "");
                 
                 string path = iconsDir + item_id + ".png";
                 if (System.IO.File.Exists(path))
@@ -337,7 +344,7 @@ namespace GearSwapUtility
             }
             else
             {
-                Sets[CurrentNode][Slot] = new KeyValuePair<int, string>(-1, "");
+                Sets[CurrentNode][Slot] = new Tuple<int, string, string>(-1, "", "");
 
                 if (pictureBox.Image != null)
                 {
@@ -345,118 +352,6 @@ namespace GearSwapUtility
                     pictureBox.Image = null;
                 }
             }
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Main, pictureBox1);
-        }
-
-        private void pictureBox2_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Sub, pictureBox2);
-        }
-
-        private void pictureBox3_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Range, pictureBox3);
-        }
-
-        private void pictureBox4_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Ammo, pictureBox4);
-        }
-
-        private void pictureBox5_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Head, pictureBox5);
-        }
-
-        private void pictureBox6_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Neck, pictureBox6);
-        }
-
-        private void pictureBox7_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.LEar, pictureBox7);
-        }
-
-        private void pictureBox8_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.REar, pictureBox8);
-        }
-
-        private void pictureBox9_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Body, pictureBox9);
-        }
-
-        private void pictureBox10_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Hands, pictureBox10);
-        }
-
-        private void pictureBox11_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.LRing, pictureBox11);
-        }
-
-        private void pictureBox12_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.RRing, pictureBox12);
-        }
-
-        private void pictureBox13_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Back, pictureBox13);
-        }
-
-        private void pictureBox14_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Waist, pictureBox14);
-        }
-
-        private void pictureBox15_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Legs, pictureBox15);
-        }
-
-        private void pictureBox16_Click(object sender, EventArgs e)
-        {
-            if (CurrentNode == null) return;
-
-            SelectItem(SlotType.Feet, pictureBox16);
         }
 
         private void ClearPictureBoxes()
@@ -512,9 +407,9 @@ namespace GearSwapUtility
 
             foreach(KeyValuePair<SlotType, PictureBox> Pair in pictureBoxes)
             {
-                if(Sets[Node][Pair.Key].Key >= 0)
+                if(Sets[Node][Pair.Key].Item1 >= 0)
                 {
-                    int item_id = Sets[Node][Pair.Key].Key;
+                    int item_id = Sets[Node][Pair.Key].Item1;
 
                     string iconsDir = GetIconsDir();
                     string path = iconsDir + item_id + ".png";
@@ -634,12 +529,12 @@ namespace GearSwapUtility
                     lines.Add("local setsUtil = {}");
                     lines.Add("");
                     lines.Add("setsUtil.apply = function(sets)");
-                    foreach (KeyValuePair<TreeNode, Dictionary<SlotType, KeyValuePair<int, string>>> Pair in Sets)
+                    foreach (KeyValuePair<TreeNode, Dictionary<SlotType, Tuple<int, string, string>>> Pair in Sets)
                     {
                         bool empty = true;
-                        foreach (KeyValuePair<SlotType, KeyValuePair<int, string>> Set in Pair.Value)
+                        foreach (KeyValuePair<SlotType, Tuple<int, string, string>> Set in Pair.Value)
                         {
-                            if (Set.Value.Key >= 0)
+                            if (Set.Value.Item1 >= 0)
                             {
                                 empty = false;
                                 break;
@@ -658,14 +553,23 @@ namespace GearSwapUtility
                         string outer_join = set_name.StartsWith("['") ? "" : ".";
                         lines.Add("sets" + outer_join + set_name + " = {");
                         bool added = false;
-                        foreach (KeyValuePair<SlotType, KeyValuePair<int, string>> Set in Pair.Value)
+                        foreach (KeyValuePair<SlotType, Tuple<int, string, string>> Set in Pair.Value)
                         {
-                            if (Set.Value.Key >= 0)
+                            if (Set.Value.Item1 >= 0)
                             {
                                 if (added) lines[lines.Count - 1] += ",";
                                 string slot_name = GetNameForSlot(Set.Key);
-                                string item_name = Set.Value.Value;
-                                lines.Add(slot_name + " = \"" + item_name + "\"");
+                                string item_name = Set.Value.Item2;
+                                if (Set.Value.Item3.Length > 0)
+                                {
+                                    string augments = Set.Value.Item3;
+                                    string item = "{ name = \"" + item_name + "\", augments={" + augments + "}}";
+                                    lines.Add(slot_name + " = " + item);
+                                }
+                                else
+                                {
+                                    lines.Add(slot_name + " = \"" + item_name + "\"");
+                                }
                                 added = true;
                             }
                         }
@@ -687,9 +591,9 @@ namespace GearSwapUtility
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Dictionary<string, Dictionary<string, Dictionary<string, string>>> exportSets = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+            Dictionary<string, Dictionary<string, Tuple<string, string, string>>> exportSets = new Dictionary<string, Dictionary<string, Tuple<string, string, string>>>();
 
-            foreach (KeyValuePair<TreeNode, Dictionary<SlotType, KeyValuePair<int, string>>> Pair in Sets)
+            foreach (KeyValuePair<TreeNode, Dictionary<SlotType, Tuple<int, string, string>>> Pair in Sets)
             {
                 TreeNode treeNode = Pair.Key;
                 string set_name = treeNode.Name.Contains(" ") ? "['" + treeNode.Name + "']" : treeNode.Name;
@@ -701,17 +605,17 @@ namespace GearSwapUtility
                     parent = parent.Parent;
                 }
 
-                exportSets.Add(set_name, new Dictionary<string, Dictionary<string, string>>());
+                exportSets.Add(set_name, new Dictionary<string, Tuple<string, string, string>>());
 
-                foreach (KeyValuePair<SlotType, KeyValuePair<int, string>> Set in Pair.Value)
+                foreach (KeyValuePair<SlotType, Tuple<int, string, string>> Set in Pair.Value)
                 {
-                    if (Set.Value.Key >= 0)
+                    if (Set.Value.Item1 >= 0)
                     {
                         string slot_name = GetNameForSlot(Set.Key);
-                        int item_id = Set.Value.Key;
-                        string item_name = Set.Value.Value;
-                        exportSets[set_name][slot_name] = new Dictionary<string, string>();
-                        exportSets[set_name][slot_name][""+item_id] = item_name;
+                        int item_id = Set.Value.Item1;
+                        string item_name = Set.Value.Item2;
+                        string item_augments = Set.Value.Item3;
+                        exportSets[set_name][slot_name] = new Tuple<string, string, string>("" + item_id, item_name, item_augments);
                     }
                 }
             }
@@ -760,9 +664,9 @@ namespace GearSwapUtility
                         treeView1.Nodes.Clear();
                         Sets.Clear();
                         System.Web.Script.Serialization.JavaScriptSerializer jss = new System.Web.Script.Serialization.JavaScriptSerializer();
-                        Dictionary<string, Dictionary<string, Dictionary<string, string>>> importSets = jss.Deserialize<Dictionary<string, Dictionary<string, Dictionary<string, string>>>>(json);
+                        Dictionary<string, Dictionary<string, Tuple<string, string, string>>> importSets = jss.Deserialize<Dictionary<string, Dictionary<string, Tuple<string, string, string>>>>(json);
 
-                        foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, string>>> Pair in importSets)
+                        foreach (KeyValuePair<string, Dictionary<string, Tuple<string, string, string>>> Pair in importSets)
                         {
                             string name = Pair.Key;
                             TreeNode Node;
@@ -821,13 +725,11 @@ namespace GearSwapUtility
 
                             Sets.Add(Node, GetBlankSet());
 
-                            foreach (KeyValuePair<string, Dictionary<string, string>> Set in Pair.Value)
+                            foreach (KeyValuePair<string, Tuple<string, string, string>> Set in Pair.Value)
                             {
                                 SlotType Slot = GetSlotForName(Set.Key);
-                                foreach (KeyValuePair<string, string> Item in Set.Value)
-                                {
-                                    Sets[Node][Slot] = new KeyValuePair<int, string>(Int32.Parse(Item.Key), Item.Value);
-                                }
+                                Tuple<string, string, string> Item = Set.Value;
+                                Sets[Node][Slot] = new Tuple<int, string, string>(Int32.Parse(Item.Item1), Item.Item2, Item.Item3);
                             }
                         }
                     }
@@ -848,12 +750,22 @@ namespace GearSwapUtility
         private void AddTooltipForPictureBox(PictureBox pictureBox)
         {
             SlotType slotType = GetSlotTypeForPictureBox(pictureBox);
-            if (Sets[CurrentNode][slotType].Key >= 0)
+            if (Sets[CurrentNode][slotType].Item1 >= 0)
             {
-                string item_name = Sets[CurrentNode][slotType].Value;
+                string toolTipText;
+                if (Sets[CurrentNode][slotType].Item3.Length > 0)
+                {
+                    string item_name = Sets[CurrentNode][slotType].Item2;
+                    string augments = Sets[CurrentNode][slotType].Item3;
+                    toolTipText = "{ name = \"" + item_name + "\", augments={" + augments + "}}";
+                }
+                else
+                {
+                    toolTipText = Sets[CurrentNode][slotType].Item2;
+                }
 
                 ToolTip toolTip = new ToolTip();
-                toolTip.SetToolTip(pictureBox, item_name);
+                toolTip.SetToolTip(pictureBox, toolTipText);
             }
         }
 
@@ -967,6 +879,309 @@ namespace GearSwapUtility
             if (CurrentNode == null) return;
 
             AddTooltipForPictureBox(pictureBox16);
+        }
+
+        private void ShowPictureBoxContextMenu(PictureBox pictureBox, Point p)
+        {
+            if (contextMenu2 == null)
+            {
+                contextMenu2 = new ContextMenu();
+            }
+            contextMenu2.MenuItems.Clear();
+
+            CurrentPictureBox = pictureBox;
+
+            // Add Node
+            MenuItem menuItem1 = new MenuItem("Edit &Augments", MenuItem_EditAugments_Click);
+            contextMenu2.MenuItems.Add(menuItem1);
+
+            contextMenu2.Show(pictureBox1, p);
+        }
+
+        private string GetAugmentForPictureBox(PictureBox pictureBox)
+        {
+            SlotType slotType = GetSlotTypeForPictureBox(pictureBox);
+            if (Sets[CurrentNode][slotType].Item1 >= 0)
+            {
+                string item_augment = Sets[CurrentNode][slotType].Item3;
+
+                return item_augment;
+            }
+            return "";
+        }
+
+        private void SetAugmentForPictureBox(PictureBox pictureBox, string text)
+        {
+            SlotType slotType = GetSlotTypeForPictureBox(pictureBox);
+            if (Sets[CurrentNode][slotType].Item1 >= 0)
+            {
+                int item_id = Sets[CurrentNode][slotType].Item1;
+                string item_name = Sets[CurrentNode][slotType].Item2;
+
+                Sets[CurrentNode][slotType] = new Tuple<int, string, string>(item_id, item_name, text);
+            }
+        }
+
+        private void MenuItem_EditAugments_Click(Object sender, System.EventArgs e)
+        {
+            Form2 form = new Form2();
+            string text = GetAugmentForPictureBox(CurrentPictureBox);
+            if (text.Length > 0)
+            {
+                form.SetText(text);
+            }
+            form.ShowDialog(this);
+
+            text = form.GetText();
+
+            if (text.Length > 0)
+            {
+                SetAugmentForPictureBox(CurrentPictureBox, text);
+            }
+            else
+            {
+                SetAugmentForPictureBox(CurrentPictureBox, "");
+            }
+        }
+
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox1);
+                SelectItem(slotType, pictureBox1);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox1, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox2);
+                SelectItem(slotType, pictureBox2);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox2, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox3);
+                SelectItem(slotType, pictureBox3);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox3, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox4_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox4);
+                SelectItem(slotType, pictureBox4);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox4, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox5_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox5);
+                SelectItem(slotType, pictureBox5);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox5, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox6_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox6);
+                SelectItem(slotType, pictureBox6);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox6, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox7_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox7);
+                SelectItem(slotType, pictureBox7);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox7, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox8_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox8);
+                SelectItem(slotType, pictureBox8);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox8, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox9_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox9);
+                SelectItem(slotType, pictureBox9);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox9, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox10_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox10);
+                SelectItem(slotType, pictureBox10);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox10, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox11_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox11);
+                SelectItem(slotType, pictureBox11);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox11, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox12_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox12);
+                SelectItem(slotType, pictureBox12);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox12, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox13_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox13);
+                SelectItem(slotType, pictureBox13);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox13, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox14_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox14);
+                SelectItem(slotType, pictureBox14);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox14, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox15_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox15);
+                SelectItem(slotType, pictureBox15);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox15, new Point(e.X, e.Y));
+        }
+
+        private void pictureBox16_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (CurrentNode == null) return;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                SlotType slotType = GetSlotTypeForPictureBox(pictureBox16);
+                SelectItem(slotType, pictureBox16);
+            }
+
+            if (e.Button != MouseButtons.Right) return;
+
+            ShowPictureBoxContextMenu(pictureBox16, new Point(e.X, e.Y));
         }
     }
 }

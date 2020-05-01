@@ -27,6 +27,11 @@ namespace GearSwapUtility
             return textBox1.Text;
         }
 
+        public void SetText(string text)
+        {
+            textBox1.Text = text;
+        }
+
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
