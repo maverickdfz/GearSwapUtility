@@ -541,7 +541,6 @@ namespace GearSwapUtility
                                 break;
                             }
                         }
-                        if (empty) continue;
                         TreeNode treeNode = Pair.Key;
                         string set_name = treeNode.Name.Contains(" ") ? "['" + treeNode.Name + "']" : treeNode.Name;
                         TreeNode parent = treeNode.Parent;
@@ -552,6 +551,11 @@ namespace GearSwapUtility
                             parent = parent.Parent;
                         }
                         string outer_join = set_name.StartsWith("['") ? "" : ".";
+                        if (empty)
+                        {
+                            lines.Add("sets" + outer_join + set_name + " = {}");
+                            continue;
+                        }
                         lines.Add("sets" + outer_join + set_name + " = {");
                         bool added = false;
                         foreach (KeyValuePair<SlotType, Tuple<int, string, string>> Set in Pair.Value)
@@ -730,10 +734,11 @@ namespace GearSwapUtility
                                     TreeNode parent = current[0];
                                     foreach (string part in parts)
                                     {
-                                        string p = part.Replace("['", "");
-                                        p = p.Replace("']", "");
-                                        int index = current.IndexOfKey(p);
-                                        parent = current[index];
+                                        string p = part.Replace("'", "");
+                                        p = p.Replace("]", "");
+                                        /*int index = current.IndexOfKey(p);
+                                        parent = current[index];*/
+                                        parent = current.Find(p, false)[0];
                                         current = parent.Nodes;
                                     }
                                     Node = parent.Nodes.Add(name, name);
@@ -925,7 +930,7 @@ namespace GearSwapUtility
             MenuItem menuItem1 = new MenuItem("Edit &Augments", MenuItem_EditAugments_Click);
             contextMenu2.MenuItems.Add(menuItem1);
 
-            contextMenu2.Show(pictureBox1, p);
+            contextMenu2.Show(pictureBox, p);
         }
 
         private string GetAugmentForPictureBox(PictureBox pictureBox)
