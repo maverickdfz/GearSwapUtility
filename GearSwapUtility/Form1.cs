@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -542,12 +543,14 @@ namespace GearSwapUtility
                             }
                         }
                         TreeNode treeNode = Pair.Key;
-                        string set_name = treeNode.Name.Contains(" ") ? "['" + treeNode.Name + "']" : treeNode.Name;
+                        string treeNodeName = treeNode.Name.Replace("'", @"\'");
+                        string set_name = treeNodeName.Contains(" ") ? "['" + treeNodeName + "']" : treeNodeName;
                         TreeNode parent = treeNode.Parent;
                         while(parent != null)
                         {
                             string join = set_name.StartsWith("['") ? "" : ".";
-                            set_name = (parent.Name.Contains(" ") ? "['" + parent.Name + "']" : parent.Name) + join + set_name;
+                            string parentName = parent.Name.Replace("'", @"\'");
+                            set_name = (parentName.Contains(" ") ? "['" + parentName + "']" : parentName) + join + set_name;
                             parent = parent.Parent;
                         }
                         string outer_join = set_name.StartsWith("['") ? "" : ".";
@@ -721,7 +724,11 @@ namespace GearSwapUtility
                                 char[] separator = { '.', '[' };
                                 string[] parts = name.Split(separator);
                                 name = parts[parts.Length - 1];
-                                name = name.Replace("'", "");
+                                if (name.StartsWith("'"))
+                                {
+                                    name = name.Substring(1);
+                                }
+                                name = name.Replace("']", "");
                                 name = name.Replace("]", "");
                                 if (parts.Length == 1)
                                 {
